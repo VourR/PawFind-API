@@ -17,6 +17,34 @@ http://localhost:<PORT>
 
 ## API Endpoints
 
+### Admin Auth API
+
+- **POST /api/admin/login**
+  Login admin dan mendapatkan token JWT.
+  **Request Body:**
+  ```json
+  {
+    "username": "admin_username",
+    "password": "admin_password"
+  }
+  ```
+  **Response (200):**
+  ```json
+  {
+    "message": "Login admin berhasil",
+    "data": {
+      "token": "jwt_token",
+      "token_type": "Bearer",
+      "expires_in": "8h",
+      "api_key": "optional_admin_api_key"
+    }
+  }
+  ```
+
+Header untuk endpoint admin-only:
+- `Authorization: Bearer <token>`
+- atau `x-api-key: <ADMIN_API_KEY>`
+
 ### Pets API
 
 - **GET /api/pets**  
@@ -65,6 +93,7 @@ http://localhost:<PORT>
 
 - **POST /api/pets**  
   Create a new pet entry. Supports an optional image upload.  
+  **Auth:** Admin only.
   **Request:**  
   - Content-Type: `multipart/form-data`  
   - Fields:  
@@ -74,6 +103,7 @@ http://localhost:<PORT>
 
 - **PUT /api/pets/:id**  
   Update an existing pet entry by ID. Supports optional image upload to replace the existing one.  
+  **Auth:** Admin only.
   **Parameters:**  
   - `id` (path parameter): The unique identifier of the pet to update.  
   **Request:**  
@@ -85,6 +115,7 @@ http://localhost:<PORT>
 
 - **DELETE /api/pets/:id**  
   Delete a pet entry by ID.  
+  **Auth:** Admin only.
   **Parameters:**  
   - `id` (path parameter): The unique identifier of the pet to delete.  
   **Response:** JSON object with success and message confirming deletion or 400 on error.
@@ -106,6 +137,7 @@ http://localhost:<PORT>
 
 - **POST /api/shelters**  
   Create a new shelter entry. Supports an optional image upload.  
+  **Auth:** Admin only.
   **Request:**  
   - Content-Type: `multipart/form-data`  
   - Fields:  
@@ -113,6 +145,60 @@ http://localhost:<PORT>
     - `image` (file): Optional image file of the shelter.  
   
   **Response:** Newly created shelter object or 400 on validation error.
+
+---
+
+### Adoption API
+
+Base route: **/api/adopted-pets**
+
+#### Public Endpoints
+
+- **POST /api/adopted-pets/adopt**  
+  Submit a new adoption request from an adopter.  
+  **Request Body:**
+  ```json
+  {
+    "pet_id": "uuid-pet",
+    "adopter_name": "John Doe",
+    "adopter_email": "john@example.com",
+    "adopter_phone": "08123456789",
+    "message": "Saya siap merawat dengan baik"
+  }
+  ```
+
+- **GET /api/adopted-pets/check/:petId**  
+  Check whether a pet is already adopted or still has a pending request.
+
+- **GET /api/adopted-pets**  
+  Get all adopted pets.
+
+- **GET /api/adopted-pets/:id**  
+  Get an adopted pet by ID.
+
+- **GET /api/adopted-pets/shelter/:shelterId**  
+  Get adopted pets by shelter ID.
+
+#### Admin Endpoints
+
+For admin-only endpoints, send one of these headers:
+- `Authorization: Bearer <token>`
+- `x-api-key: <ADMIN_API_KEY>`
+
+- **GET /api/adopted-pets/requests**  
+  Get all adoption requests. Supports optional query `status=pending|approved|rejected`.
+
+- **POST /api/adopted-pets/requests/:requestId/approve**  
+  Approve a pending adoption request.
+
+- **POST /api/adopted-pets/requests/:requestId/reject**  
+  Reject a pending adoption request.
+
+- **PUT /api/adopted-pets/:id**  
+  Update an adopted pet record. Admin only.
+
+- **DELETE /api/adopted-pets/:id**  
+  Remove an adopted pet record. Admin only.
 
 ---
 
@@ -143,6 +229,11 @@ PORT=4000
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_anon_key
 SUPABASE_BUCKET=your_supabase_storage_bucket_name
+ADMIN_USERNAME=your_admin_username
+ADMIN_PASSWORD=your_admin_password
+ADMIN_JWT_SECRET=your_super_secret_jwt_key
+ADMIN_JWT_EXPIRES_IN=8h
+ADMIN_API_KEY=optional_static_admin_api_key
 ```
 
 3. Start the server:

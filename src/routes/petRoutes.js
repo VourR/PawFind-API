@@ -4,11 +4,12 @@ const multer = require("multer");
 const upload = multer();
 
 const petController = require("../controllers/petController");
+const adminAuth = require("../middlewares/adminAuth");
 
 router.get("/", petController.getPets);
 router.get("/:id", petController.getPetById);
-router.post("/", upload.single("image"), petController.createPet);
-router.put("/:id", upload.single("image"), petController.updatePet);
-router.delete("/:id", petController.deletePet);
+router.post("/", adminAuth, upload.single("image"), petController.createPet);
+router.put("/:id", adminAuth, upload.single("image"), petController.updatePet);
+router.delete("/:id", adminAuth, petController.deletePet);
 
 module.exports = router;

@@ -190,7 +190,7 @@ const adoptedPetController = {
   approveAdoptionRequest: async (req, res) => {
     try {
       const { requestId } = req.params;
-      const { reviewed_by, admin_notes } = req.body;
+      const { reviewed_by, admin_notes } = req.body || {};
 
       const request = await AdoptionRequestModel.getRequestById(requestId);
       if (!request) {
@@ -260,7 +260,7 @@ const adoptedPetController = {
   rejectAdoptionRequest: async (req, res) => {
     try {
       const { requestId } = req.params;
-      const { reviewed_by, admin_notes } = req.body;
+      const { reviewed_by, admin_notes } = req.body || {};
 
       const request = await AdoptionRequestModel.getRequestById(requestId);
       if (!request) {

@@ -1,18 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const adoptedPetController = require('../controllers/adoptedPetController');
+const adminAuth = require('../middlewares/adminAuth');
 
 // Route untuk adopsi pet
 router.post('/adopt', adoptedPetController.adoptPet);
 
 // Route untuk mendapatkan request adopsi (admin)
-router.get('/requests', adoptedPetController.getAdoptionRequests);
+router.get('/requests', adminAuth, adoptedPetController.getAdoptionRequests);
 
 // Route untuk approve request adopsi (admin)
-router.post('/requests/:requestId/approve', adoptedPetController.approveAdoptionRequest);
+router.post('/requests/:requestId/approve', adminAuth, adoptedPetController.approveAdoptionRequest);
 
 // Route untuk reject request adopsi (admin)
-router.post('/requests/:requestId/reject', adoptedPetController.rejectAdoptionRequest);
+router.post('/requests/:requestId/reject', adminAuth, adoptedPetController.rejectAdoptionRequest);
 
 // Route untuk mendapatkan adopted pets berdasarkan shelter
 router.get('/shelter/:shelterId', adoptedPetController.getAdoptedPetsByShelterId);
@@ -27,9 +28,9 @@ router.get('/', adoptedPetController.getAllAdoptedPets);
 router.get('/:id', adoptedPetController.getAdoptedPetById);
 
 // Route untuk update adopted pet
-router.put('/:id', adoptedPetController.updateAdoptedPet);
+router.put('/:id', adminAuth, adoptedPetController.updateAdoptedPet);
 
 // Route untuk hapus adopted pet (batalkan adopsi)
-router.delete('/:id', adoptedPetController.deleteAdoptedPet);
+router.delete('/:id', adminAuth, adoptedPetController.deleteAdoptedPet);
 
 module.exports = router;

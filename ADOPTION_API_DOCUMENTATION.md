@@ -64,6 +64,23 @@ CREATE TABLE adoption_requests (
 
 Base URL: `/api/adopted-pets`
 
+## Admin Auth
+
+Untuk endpoint admin-only, gunakan salah satu header berikut:
+- `Authorization: Bearer <token>` (didapat dari login)
+- `x-api-key: <ADMIN_API_KEY>`
+
+Endpoint login admin:
+- `POST /api/admin/login`
+
+Request body login:
+```json
+{
+  "username": "admin_username",
+  "password": "admin_password"
+}
+```
+
 ### 1. Buat Pengajuan Adopsi
 
 Endpoint: `POST /api/adopted-pets/adopt`
@@ -140,12 +157,16 @@ Response Success (200):
 
 Endpoint: `GET /api/adopted-pets/requests`
 
+Auth: wajib token/API key admin
+
 Query Params (optional):
 - `status=pending|approved|rejected`
 
 ### 4. Approve Request (Admin)
 
 Endpoint: `POST /api/adopted-pets/requests/:requestId/approve`
+
+Auth: wajib token/API key admin
 
 Deskripsi:
 - Khusus request `pending`.
@@ -163,6 +184,8 @@ Request Body (optional):
 ### 5. Reject Request (Admin)
 
 Endpoint: `POST /api/adopted-pets/requests/:requestId/reject`
+
+Auth: wajib token/API key admin
 
 Deskripsi:
 - Khusus request `pending`.
@@ -183,8 +206,8 @@ Endpoint berikut tetap ada dan bekerja untuk data yang sudah approved:
 - `GET /api/adopted-pets`
 - `GET /api/adopted-pets/:id`
 - `GET /api/adopted-pets/shelter/:shelterId`
-- `PUT /api/adopted-pets/:id`
-- `DELETE /api/adopted-pets/:id`
+- `PUT /api/adopted-pets/:id` (admin-only)
+- `DELETE /api/adopted-pets/:id` (admin-only)
 
 ## Contoh Integrasi Frontend
 
@@ -241,6 +264,11 @@ npm install
 SUPABASE_URL=your_supabase_url
 SUPABASE_KEY=your_supabase_key
 PORT=4000
+ADMIN_USERNAME=your_admin_username
+ADMIN_PASSWORD=your_admin_password
+ADMIN_JWT_SECRET=your_super_secret_jwt_key
+ADMIN_JWT_EXPIRES_IN=8h
+ADMIN_API_KEY=optional_static_admin_api_key
 ```
 4. Start server:
 ```bash
