@@ -3,6 +3,10 @@ const supabase = require('../config/supabase');
 const ADOPTION_REQUEST_SELECT = `
   id,
   pet_id,
+  pet:pets (
+    name,
+    type
+  ),
   adopter_id,
   status,
   requested_at,
@@ -24,13 +28,15 @@ const formatAdoptionRequest = (row) => {
   if (!row) return row;
 
   const adopter = row.adopter || null;
+  const pet = row.pet || null;
 
   return {
     ...row,
     adopter_name: adopter?.full_name || null,
     adopter_email: adopter?.email || null,
     adopter_phone: adopter?.phone || null,
-    notes: adopter?.message || null
+    notes: adopter?.message || null,
+    pet: pet ? { name: pet.name, type: pet.type } : null
   };
 };
 
